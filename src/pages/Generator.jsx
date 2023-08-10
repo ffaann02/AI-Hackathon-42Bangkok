@@ -6,7 +6,7 @@ const Generator = () => {
     const [results, setResults] = useState(null);
     const [promptsInput, setPromptsInput] = useState("Furniture, Wood, Like a King, Fancy, Useable and Possible to craft Furniture");
     const [progress, setProgress] = useState(false);
-
+    
     const fetchGenerateImages = async () => {
         const apiUrl = 'https://stablediffusionapi.com/api/v3/text2img';
         const requestData = {
