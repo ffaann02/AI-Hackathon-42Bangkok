@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import "../App.css"
 import waitingBotImage from "/images/waiting-bot.gif"
+import { useUser } from "../UserContext";
 const Generator = () => {
     const [results, setResults] = useState(null);
     const [promptsInput, setPromptsInput] = useState("Furniture, Wood, Like a King, Fancy, Useable and Possible to craft Furniture");
@@ -92,7 +93,7 @@ const Generator = () => {
     }
 
       
-
+    
     return (
         <>
             <div className="flex w-full h-full min-h-screen justify-center my-auto">
