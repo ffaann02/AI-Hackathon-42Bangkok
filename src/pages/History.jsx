@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
-import {saveAs} from "file-saver";
-import Card from "../page components/Card"
-import data from "../page components/DummyHistory"
-
+import { saveAs } from "file-saver";
+import Card from "../components/Card"
+import data from "../components/DummyHistory"
 const History = () => {
 
     const [selectDisplay, setSelectDisplay] = useState("All generation")
@@ -12,7 +11,6 @@ const History = () => {
     const [imgURL, setImgURL] = useState(null)
 
     let cardDetailRef = useRef();
-    const clipboardRef = useRef();
 
     useEffect(() => {
         let handler = (e) => {
@@ -50,23 +48,23 @@ const History = () => {
 
     return (
         <div className="relative">
-            <div className="sticky top-0 w-full z-30">
-                <div className="w-full pt-8 bg-[#292C39]">
-                    <p className="ml-24 text-3xl font-semibold text-white">History</p>
-                </div>
-                <div className="w-full pt-12 pb-4 bg-[#292C39] flex">
-                    <p className={`ml-24 my-auto p-2 text-2xl cursor-pointer hover:bg-[#585b6e]
-                        ${selectDisplay === "All generation" ? "text-[#E49D65]" : "text-white"}`} 
-                        onClick={() => handleAllGenerationClick()}>All generation</p>
-                    <p className={`ml-12 my-auto p-2 text-2xl cursor-pointer  hover:bg-[#585b6e]
-                        ${selectDisplay === "Favorites" ? "text-[#E49D65]" : "text-white"}`} 
-                        onClick={() => handleFavoritesClick()}>Favorites</p>
+            <div className="sticky top-14 w-full z-30 bg-project-navy-2 pt-6">
+                <div className="w-full px-32">
+                    <p className="ml-4 text-2xl font-semibold text-white tracking-wider">History</p>
+                    <div className="w-full flex mt-6">
+                        <p className={`my-auto p-2 text-lg cursor-pointer hover:bg-project-navy-1
+                        ${selectDisplay === "All generation" ? "text-project-orange" : "text-white"} px-4`}
+                            onClick={() => handleAllGenerationClick()}>All generation</p>
+                        <p className={`my-auto p-2 text-lg cursor-pointer  hover:bg-project-navy-2
+                        ${selectDisplay === "Favorites" ? "text-project-orange" : "text-white"} px-4`}
+                            onClick={() => handleFavoritesClick()}>Favorites</p>
+                    </div>
                 </div>
             </div>
 
             {selectDisplay === "All generation"
 
-                && <div>
+                && <div className="px-20 w-full">
                     {data.map(item => (
                         <Card
                             key={item.id}
@@ -88,7 +86,7 @@ const History = () => {
                             </div>
 
                             <div className="col-span-6 relative p-2">
-                                
+
                                 <div className="flex justify-end mt-4">
                                     <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black py-2 px-4 rounded-sm inline-flex items-center" onClick={downloadClick}>
                                         <svg className="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" /></svg>
@@ -97,7 +95,7 @@ const History = () => {
                                     <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black  px-4 py-2 rounded-sm">
                                         <span>Share</span>
                                     </button>
-                                    <button className="mr-4 bg-[#111111] hover:bg-gray-600 text-white  px-4 py-2 rounded-sm">
+                                    <button className="mr-4 bg-project-black hover:bg-gray-600 text-white  px-4 py-2 rounded-sm">
                                         <span>Save</span>
                                     </button>
                                 </div>
@@ -105,10 +103,10 @@ const History = () => {
                                 <p className="mt-12 ml-8 text-2xl font-semibold">{imgPrompt}</p>
 
                                 <div className="absolute bottom-8 ml-8">
-                                    <button className="mr-4 bg-[#E49D65] text-[#E49D65]  px-24 py-4 rounded-lg">
+                                    <button className="mr-4 bg-project-orange text-project-orange  px-24 py-4 rounded-lg">
                                         <span>-</span>
                                     </button>
-                                    <button className="mr-4 bg-[#111111] text-[#111111]  px-24 py-4 rounded-lg">
+                                    <button className="mr-4 bg-project-black text-project-black  px-24 py-4 rounded-lg">
                                         <span>-</span>
                                     </button>
                                 </div>

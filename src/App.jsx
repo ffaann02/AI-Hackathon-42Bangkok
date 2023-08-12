@@ -5,6 +5,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
+  useLocation,
 } from "react-router-dom";
 import Generator from './pages/Generator';
 import { UserProvider } from "./UserContext";
@@ -16,12 +17,14 @@ import Login from "./pages/Login";
 import History from './pages/History';
 import { useUser } from "./UserContext";
 import React, { useEffect } from "react"
+import Navbar from "./components/Navbar";
 function App() {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
   const { user, setUser, accessToken, setAccessToken } = useUser();
   const db = firebase.firestore();
+  const [pathName,setPathName] = useState("");
   const findDocumentsWithEmptyToken = async (localAccessToken) => {
     try {
       const querySnapshot = await db.collection("users")
@@ -43,15 +46,13 @@ function App() {
         findDocumentsWithEmptyToken(localAccessToken);
       }
     }
-  }, [])
+    setPathName(location.pathname);
+  }, [pathName, user])
   return (
     <div className="w-full min-h-screen relative">
-      <div className="w-full h-full absolute -z-10">
-        <img src="/images/furniture-bg-login.webp" className="w-full h-full absolute -z-20" />
-        <div className="bg-blue-400 w-full h-full absolute -z-10 bg-opacity-25"></div>
-      </div>
       <div className="mx-auto w-full">
         <Router>
+          <Navbar/>
           <Routes>
             <Route path="/" element={<div>hello: {user && user.displayName}</div>} />
             <Route path="/generator" element={<Generator />} />
