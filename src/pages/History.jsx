@@ -106,7 +106,7 @@ const History = () => {
                                     <button className="mr-4 bg-project-orange text-project-orange  px-24 py-4 rounded-lg">
                                         <span>-</span>
                                     </button>
-                                    <button className="mr-4 bgproject-black textproject-black  px-24 py-4 rounded-lg">
+                                    <button className="mr-4 bg-project-black text-project-black  px-24 py-4 rounded-lg">
                                         <span>-</span>
                                     </button>
                                 </div>
