@@ -7,7 +7,7 @@ const Generator = () => {
     const [results, setResults] = useState(null);
     const [promptsInput, setPromptsInput] = useState("Furniture, Wood, Like a King, Fancy, Useable and Possible to craft Furniture");
     const [progress, setProgress] = useState(false);
-    
+
     const fetchGenerateImages = async () => {
         const apiUrl = 'https://stablediffusionapi.com/api/v3/text2img';
         const requestData = {
@@ -42,68 +42,66 @@ const Generator = () => {
     const handleInputChange = (event) => {
         setPromptsInput(event.target.value);
     };
-
+    const dummyImages = [
+        "https://cdn2.stablediffusionapi.com/generations/498b67c5-5347-431f-967c-9ff5f5bbf587-0.png",
+        "https://cdn2.stablediffusionapi.com/generations/0356ffd1-1e11-4021-aded-48ee097a0839-0.png",
+        "https://cdn2.stablediffusionapi.com/generations/022049b0-c596-4273-8c2d-b33cc66159f0-0.png"
+    ];
     function simulateDummyApiRequest() {
-        const images = [
-          "https://cdn2.stablediffusionapi.com/generations/498b67c5-5347-431f-967c-9ff5f5bbf587-0.png",
-          "https://cdn2.stablediffusionapi.com/generations/0356ffd1-1e11-4021-aded-48ee097a0839-0.png",
-          "https://cdn2.stablediffusionapi.com/generations/022049b0-c596-4273-8c2d-b33cc66159f0-0.png"
-        ];
-      
-        const randomImageIndex = Math.floor(Math.random() * images.length);
-      
+
+        const randomImageIndex = Math.floor(Math.random() * dummyImages.length);
+
         const response = {
-          status: "success",
-          generationTime: Math.random() * 5, // Simulated generation time between 0 and 5 seconds
-          id: Math.floor(Math.random() * 100000),
-          output: [images[randomImageIndex]],
-          meta: {
-            H: 512,
-            W: 512,
-            enable_attention_slicing: "true",
-            file_prefix: "05c3260d-6a2e-4aa5-82f0-e952f2a5fa10",
-            guidance_scale: 7.5,
-            model: "runwayml/stable-diffusion-v1-5",
-            n_samples: 1,
-            negative_prompt: "((out of frame)), ...", // Your provided negative_prompt
-            outdir: "out",
-            prompt: "ultra realistic close up portrait ...", // Your provided prompt
-            revision: "fp16",
-            safety_checker: "none",
-            seed: Math.floor(Math.random() * 100000),
-            steps: 20,
-            vae: "stabilityai/sd-vae-ft-mse"
-          }
+            status: "success",
+            generationTime: Math.random() * 5, // Simulated generation time between 0 and 5 seconds
+            id: Math.floor(Math.random() * 100000),
+            output: [dummyImages[randomImageIndex]],
+            meta: {
+                H: 512,
+                W: 512,
+                enable_attention_slicing: "true",
+                file_prefix: "05c3260d-6a2e-4aa5-82f0-e952f2a5fa10",
+                guidance_scale: 7.5,
+                model: "runwayml/stable-diffusion-v1-5",
+                n_samples: 1,
+                negative_prompt: "((out of frame)), ...", // Your provided negative_prompt
+                outdir: "out",
+                prompt: "ultra realistic close up portrait ...", // Your provided prompt
+                revision: "fp16",
+                safety_checker: "none",
+                seed: Math.floor(Math.random() * 100000),
+                steps: 20,
+                vae: "stabilityai/sd-vae-ft-mse"
+            }
         };
-      
+
         return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(response);
-          }, 4000); // Simulating a 1-second delay for the API request
+            setTimeout(() => {
+                resolve(response);
+            }, 4000); // Simulating a 1-second delay for the API request
         });
-      }
-    const dummyGenerateFetch=()=>{
+    }
+    const dummyGenerateFetch = () => {
         setProgress(true); // Reset progress before starting the request
 
         simulateDummyApiRequest().then((response) => {
             console.log('API Response:', response);
             setResults(response);
             setProgress(false); // Set progress to 100% when request is complete
-          });
+        });
+        window.scrollTo(0, 0);
     }
 
-      
-    
     return (
         <>
-            <div className="flex w-full h-full min-h-screen justify-center my-auto">
-                <div className="w-full text-center">
-                    <div className="flex mx-auto justify-center w-full">
+            <div className={`flex w-full ${!progress && "min-h-screen"} h-full justify-center my-auto`}>
+                <div className="w-full text-center max-w-5xl">
+                    <div className="flex mx-auto justify-center w-full sticky top-16 mt-10 shadow-lg rounded-md ">
                         <input
                             type="text"
                             value={promptsInput}
                             onChange={handleInputChange}
-                            className="border rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 w-full 
+                            className="border rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 w-full 
                         rounded-r-none text-slate-600 tracking-wider"
                             placeholder="Example: Furniture, Wood, Like a King, Fancy, Useable and Possible to create Furniture"
                         />
@@ -117,7 +115,7 @@ const Generator = () => {
                     </div>
                     {progress && (
                         <div className="w-1/2 mx-auto">
-                            <img src={waitingBotImage} className="w-30"/>
+                            <img src={waitingBotImage} className="w-30" />
                             <p className="font-bold text-2xl tracking-wider text-slate-600">
                                 Waiting<span id="dot-animation"></span>
                             </p>
@@ -127,9 +125,18 @@ const Generator = () => {
                         <div className="w-full">
                             <p className="mt-10 mb-2 text-xl font-bold">Result:</p>
                             <img src={results.output} alt="Generated Image"
-                            className="mx-auto"/>
+                                className="mx-auto" />
                         </div>
                     )}
+                    {!progress && !results && (<div className="w-full max-w-5xl grid grid-cols-12 mt-6">
+                        {[...Array(3)].map((_, repetitionIndex) => (
+                            dummyImages.map((image, index) => (
+                                <div className="col-span-4 p-2" key={repetitionIndex * dummyImages.length + index}>
+                                    <img src={image} alt={`Image ${index}`} />
+                                </div>
+                            ))
+                        ))}
+                    </div>)}
                 </div>
             </div>
         </>
