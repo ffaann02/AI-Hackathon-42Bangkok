@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { useUser } from '../UserContext';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -11,13 +11,13 @@ import botIcon from '/images/bot-icon.png';
 
 const Login = () => {
     const navigate = useNavigate();
-    const { user, setUser, accessToken, setAccessToken} = useUser();
-    useEffect(()=>{
+    const { user, setUser, accessToken, setAccessToken } = useUser();
+    useEffect(() => {
         const accessToken = localStorage.getItem("accessToken");
-        if(accessToken || user) {
+        if (accessToken || user) {
             navigate("/")
         }
-    },[])
+    }, [])
 
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
@@ -44,25 +44,26 @@ const Login = () => {
                     const userData = {
                         displayName: user.displayName,
                         email: user.email,
-                        accessToken: accessToken
+                        accessToken: accessToken,
+                        photoURL: user.photoURL
                     };
                     userRef
                         .set(userData)
                         .then(() => {
                             console.log('User data created:', userData);
-                            
+
                             // Update the user context state
                             setUser(userData);
-                            
+
                             // Update localStorage with the new accessToken
                             localStorage.setItem("accessToken", accessToken);
-                            
+
                             // Navigate to the desired location
                             navigate("/");
-                          })
-                          .catch(error => {
+                        })
+                        .catch(error => {
                             console.error('Error collecting user info:', error);
-                          });
+                        });
                 }
                 navigate("/")
             });
@@ -73,6 +74,10 @@ const Login = () => {
 
     return (
         <>
+            <div className="w-full h-full absolute -z-10" id="bg-login">
+                <img src="/images/furniture-bg-login.webp" className="w-full h-full absolute -z-20" />
+                <div className="bg-blue-400 w-full h-full absolute -z-10 bg-opacity-25"></div>
+            </div>
             <div className="px-10 py-20 flex w-full max-w-5xl min-h-screen h-full justify-center m-auto">
                 <div className="grid grid-cols-2 w-full bg-white drop-shadow-lg border-t-[2px] border-slate-100 rounded-xl">
                     <div className="my-auto px-4 border-r-[0.15rem] border-slate-100">
