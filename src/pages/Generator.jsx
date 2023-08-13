@@ -103,18 +103,16 @@ const Generator = () => {
             setProgress(false); // Set progress to 100% when request is complete
 
             // Post to database
-            const date = new Date(Date.now());
-            const dateFormat = date.toLocaleString();
+            console.log(response.output[0]);
             if (response) {
                 axios.post("http://localhost:3200/generator", {
-                    user_id: user.uid,
-                    user_display_name: user.displayName,
-                    image_id: response.id,
-                    image_url: response.output,
-                    prompt: response.meta.prompt,
-                    height: response.meta.H,
-                    width: response.meta.W,
-                    date: dateFormat
+                user_id: user.uid,
+                user_display_name: user.displayName,
+                image_id: response.id,
+                image_url: response.output[0],
+                prompt: response.meta.prompt,
+                height: response.meta.H,
+                width:  response.meta.W,
                 })
             }
         });

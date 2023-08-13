@@ -6,9 +6,11 @@ import data from "../components/DummyHistory"
 import html2canvas from "html2canvas"
 import axios from "axios"
 import { useUser } from "../UserContext";
+import { GoChevronDown } from "react-icons/go"
+
 const History = () => {
 
-    const [selectDisplay, setSelectDisplay] = useState("All generation")
+    const [selectDisplay, setSelectDisplay] = useState("All generated")
 
     const [cardClicked, setCardClicked] = useState(false)
     const [imgID, setImgID] = useState(null)
@@ -19,6 +21,31 @@ const History = () => {
 
     const navigate = useNavigate();
 
+    const [userID, setUserID] = useState(null);
+    const [historyData, setHistoryData] = useState(null);
+    const [isOldest, setIsOldest] = useState(true);
+
+    useEffect(() => {
+        if (user) {
+            setUserID(user.uid);
+        }
+    }, [user])
+
+    useEffect(() => {
+        const fetchImageData = async () => {
+            try {
+                console.log(userID);
+                const response = await axios.get(`http://localhost:3200/history?history=${userID}`);
+                setHistoryData(response.data);
+                console.log(response.data)
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        if (userID) {
+            fetchImageData();
+        }
+    }, [userID])
 
     useEffect(() => {
         let handler = (e) => {
@@ -35,14 +62,15 @@ const History = () => {
     });
 
     const handleCardClick = (id, prompt, imgURL) => {
+        console.log("TEst")
         setCardClicked(true);
         setImgID(id);
         setImgPrompt(prompt);
         setImgURL(imgURL);
     };
 
-    const handleAllGenerationClick = () => {
-        setSelectDisplay("All generation");
+    const handleAllGeneratedClick = () => {
+        setSelectDisplay("All generated");
     }
 
     const handleFavoritesClick = () => {
@@ -52,24 +80,29 @@ const History = () => {
 
     const handleDownload = async (imageUrl) => {
         try {
-          const response = await axios.post('http://localhost:3200/fetch-image', { imageUrl }, { responseType: 'arraybuffer' });
-          const imageData = response.data;
-          console.log(response)
-    
-          const imageBlob = new Blob([imageData], { type: 'image/png' });
-          const imageURL = URL.createObjectURL(imageBlob);
-    
-          const link = document.createElement('a');
-          link.href = imageURL;
-          link.download = 'image.png';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        } catch (error) {
-          console.error('Error fetching or processing image:', error);
-        }
-      };
+            const response = await axios.post('http://localhost:3200/fetch-image', { imageUrl }, { responseType: 'arraybuffer' });
+            const imageData = response.data;
+            console.log(response)
 
+            const imageBlob = new Blob([imageData], { type: 'image/png' });
+            const imageURL = URL.createObjectURL(imageBlob);
+
+            const link = document.createElement('a');
+            link.href = imageURL;
+            link.download = 'image.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error fetching or processing image:', error);
+        }
+    };
+
+    const reverseArray = () => {
+        const reversedArray = [...historyData].reverse()
+        setHistoryData(reversedArray);
+        console.log(reversedArray)
+    }
 
     return (
         <div className="relative">
@@ -78,8 +111,8 @@ const History = () => {
                     <p className="ml-4 text-2xl font-semibold text-white tracking-wider">History</p>
                     <div className="w-full flex mt-6">
                         <p className={`my-auto p-2 text-lg cursor-pointer hover:bg-project-navy-1
-                        ${selectDisplay === "All generation" ? "text-project-orange" : "text-white"} px-4`}
-                            onClick={() => handleAllGenerationClick()}>All generation</p>
+                        ${selectDisplay === "All generated" ? "text-project-orange" : "text-white"} px-4`}
+                            onClick={() => handleAllGeneratedClick()}>All generated</p>
                         <p className={`my-auto p-2 text-lg cursor-pointer  hover:bg-project-navy-2
                         ${selectDisplay === "Favorites" ? "text-project-orange" : "text-white"} px-4`}
                             onClick={() => handleFavoritesClick()}>Favorites</p>
@@ -87,12 +120,24 @@ const History = () => {
                 </div>
             </div>
 
-            {selectDisplay === "All generation"
+            {historyData
+                &&  <div className="w-full px-32 pt-4">
+                        <details className="">
+                        <summary className="p-2 w-fit cursor-pointer bg-gray-200">Sorted by</summary>
+                            <ul className="w-fit cursor-pointer shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
+                                <li onClick={() => {reverseArray(historyData)}} className="p-2 hover:bg-gray-400"><a>Oldest</a></li>
+                                <li onClick={() => {reverseArray(historyData)}} className="p-2  hover:bg-gray-400"><a>Lasted</a></li>
+                            </ul>
+                        </details>
+                    </div>
+            }
 
-                && <div className="px-20 w-full">
-                    {data.map(item => (
+            {selectDisplay === "All generated"
+                && historyData
+                && <div className="w-full grid grid-cols-12 pt-4 px-32">
+                    {historyData.map(item => (
                         <Card
-                            key={item.id}
+                            key={`${item.id}_${historyData[0].id}`}
                             onClick={handleCardClick} // Pass the onClick function
                             {...item}
                         />
@@ -100,7 +145,7 @@ const History = () => {
                 </div>
             }
 
-            {selectDisplay === "All generation" && cardClicked && <>
+            {selectDisplay === "All generated" && cardClicked && <>
                 <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
                     <div className="relative w-auto my-6 mx-auto max-w-5xl">
                         {/*content*/}
