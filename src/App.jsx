@@ -19,19 +19,21 @@ import Share from "./pages/Share";
 import { useUser } from "./UserContext";
 import React, { useEffect } from "react"
 import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
 function App() {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
   const { user, setUser, accessToken, setAccessToken } = useUser();
   const db = firebase.firestore();
-  const [pathName,setPathName] = useState("");
+  const [pathName, setPathName] = useState("");
+  const [isAuthenticated,setIsAuthenticated] = useState(false);
   const findDocumentsWithEmptyToken = async (localAccessToken) => {
     try {
       const querySnapshot = await db.collection("users")
         .where("accessToken", "==", localAccessToken) // Change this to "== null" if you use null values
         .get();
-  
+
       querySnapshot.forEach((doc) => {
         setUser(doc.data());
       });
@@ -50,20 +52,22 @@ function App() {
     setPathName(location.pathname);
   }, [pathName, user])
   return (
-    <div className="w-full min-h-screen relative">
-      <div className="mx-auto w-full">
-        <Router>
-          <Navbar/>
-          <Routes>
-            <Route path="/" element={<div>hello: {user && user.displayName}</div>} />
-            <Route path="/generator" element={<Generator />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/history" element={<History />}/>
-            <Route path="/share/:imageid" element={<Share />}/>
-          </Routes>
-        </Router>
-      </div>
-    </div>
+    <>
+        <div className="w-full min-h-screen relative">
+          <div className="mx-auto w-full">
+            <Router>
+              <Navbar/>
+              <Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/generator" element={<Generator />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/share/:imageid" element={<Share />} />
+              </Routes>
+            </Router>
+          </div>
+        </div>
+    </>
   )
 }
 

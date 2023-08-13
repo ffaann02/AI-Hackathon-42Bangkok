@@ -5,6 +5,7 @@ import Card from "../components/Card"
 import data from "../components/DummyHistory"
 import html2canvas from "html2canvas"
 import axios from "axios"
+import { useUser } from "../UserContext";
 const History = () => {
 
     const [selectDisplay, setSelectDisplay] = useState("All generation")
@@ -13,10 +14,11 @@ const History = () => {
     const [imgID, setImgID] = useState(null)
     const [imgPrompt, setImgPrompt] = useState(null)
     const [imgURL, setImgURL] = useState(null)
-
+    const {user} = useUser();
     let cardDetailRef = useRef();
 
     const navigate = useNavigate();
+
 
     useEffect(() => {
         let handler = (e) => {

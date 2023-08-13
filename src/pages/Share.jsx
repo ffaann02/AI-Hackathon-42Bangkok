@@ -13,7 +13,7 @@ const Share = () => {
     useEffect(() => {
         const fetchShare = async () => {  
         try {
-            const response = await axios.get(`http://localhost:5000/share?imageid=${imageid}`);
+            const response = await axios.get(`http://localhost:3200/share?imageid=${imageid}`);
             setSharedData(response.data);
             setImagePrompt(response.data.prompt);
             setImageURL(response.data.image_url);
