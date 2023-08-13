@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useRef } from "react"
+import { useNavigate } from 'react-router-dom';
 import { saveAs } from "file-saver";
 import Card from "../components/Card"
-import data from "../components/DummyHistory"
+import data from "../components/DummyHistory.js"
 const History = () => {
 
     const [selectDisplay, setSelectDisplay] = useState("All generation")
 
     const [cardClicked, setCardClicked] = useState(false)
+    const [imgID, setImgID] = useState(null)
     const [imgPrompt, setImgPrompt] = useState(null)
     const [imgURL, setImgURL] = useState(null)
 
     let cardDetailRef = useRef();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         let handler = (e) => {
@@ -28,6 +32,7 @@ const History = () => {
 
     const handleCardClick = (id, prompt, imgURL) => {
         setCardClicked(true);
+        setImgID(id);
         setImgPrompt(prompt);
         setImgURL(imgURL);
     };
@@ -92,7 +97,7 @@ const History = () => {
                                         <svg className="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" /></svg>
                                         <span>Download</span>
                                     </button>
-                                    <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black  px-4 py-2 rounded-sm">
+                                    <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black  px-4 py-2 rounded-sm" onClick={() => navigate(`/share/${imgID}`)}>
                                         <span>Share</span>
                                     </button>
                                     <button className="mr-4 bg-project-black hover:bg-gray-600 text-white  px-4 py-2 rounded-sm">

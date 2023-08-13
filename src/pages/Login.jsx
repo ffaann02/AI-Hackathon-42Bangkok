@@ -42,6 +42,7 @@ const Login = () => {
                     localStorage.setItem("accessToken", doc.data().accessToken);
                 } else {
                     const userData = {
+                        uid: user.uid,
                         displayName: user.displayName,
                         email: user.email,
                         accessToken: accessToken,
