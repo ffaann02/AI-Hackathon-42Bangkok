@@ -42,6 +42,7 @@ const Login = () => {
                     localStorage.setItem("accessToken", doc.data().accessToken);
                 } else {
                     const userData = {
+                        uid: user.uid,
                         displayName: user.displayName,
                         email: user.email,
                         accessToken: accessToken,
@@ -71,7 +72,7 @@ const Login = () => {
             console.error('Google login error:', error);
         }
     };
-
+    
     return (
         <>
             <div className="w-full h-full absolute -z-10" id="bg-login">
