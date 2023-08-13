@@ -1,14 +1,14 @@
 import { Link, useLocation } from "react-router-dom"
-import React, { useRef, useState,useEffect } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import { useUser } from "../UserContext";
 import googleIcon from '/images/google-icon.png';
 import robotCoverLogin from '/images/robot-png.png';
 import { AiFillCaretDown } from 'react-icons/ai';
 import { FiLogOut } from "react-icons/fi";
 const Navbar = () => {
-    const { user,setUser } = useUser();
+    const { user, setUser } = useUser();
     const location = useLocation();
-    const [toggleProfileBar,setToggleProfileBar] = useState(false);
+    const [toggleProfileBar, setToggleProfileBar] = useState(false);
     const profileBarRef = useRef();
     useEffect(() => {
         let handler = (e) => {
@@ -25,13 +25,13 @@ const Navbar = () => {
     });
 
 
-    const handleSignOut=()=>{
+    const handleSignOut = () => {
         setUser(null);
         localStorage.removeItem("accessToken");
         setToggleProfileBar(false)
     }
 
-    
+
     return (
         <>
             <nav className={`sticky top-0 w-full h-14 bg-project-navy-2 flex px-20 justify-between z-[100] border-b-[1px]
@@ -53,13 +53,24 @@ const Navbar = () => {
                 </div>
                 {user ?
                     <div className="flex h-full">
-                        <p className="my-auto text-white text-md tracking-wider flex">{user.displayName}
-                            <AiFillCaretDown className="mt-[6px] text-sm hover:text-slate-200 cursor-pointer" 
-                            onClick={()=>{setToggleProfileBar(prev=>!prev)}}/>
+                        <p className="my-auto text-white text-md tracking-wider flex cursor-pointer">{user.displayName}
+                            <AiFillCaretDown
+                                className={`mt-[6px] text-sm ${toggleProfileBar ? 'pointer-events-none text-slate-200' : 'hover:text-slate-200'
+                                    } cursor-pointer`}
+                                onClick={() => {
+                                    setToggleProfileBar((prev) => !prev);
+                                }}
+                            />
                         </p>
-                        <div className="my-auto bg-white rounded-full ml-2 border-2 border-project-orange hover:opacity-80">
-                            <img src={user.photoURL} className="cursor-pointer w-8 h-8 hover:opacity-70 rounded-full" 
-                            onClick={()=>{setToggleProfileBar(prev=>!prev)}}/>
+                        <div className="cursor-pointer my-auto bg-white rounded-full ml-2 border-2 border-project-orange hover:opacity-80">
+                            <img
+                                src={user.photoURL}
+                                className={`w-8 h-8 rounded-full ${toggleProfileBar ? 'pointer-events-none' : 'hover:opacity-70'
+                                    }`}
+                                onClick={() => {
+                                    setToggleProfileBar((prev) => !prev);
+                                }}
+                            />
                         </div>
                     </div>
                     : <div className="flex h-full">

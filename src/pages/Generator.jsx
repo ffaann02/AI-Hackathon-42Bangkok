@@ -17,33 +17,8 @@ const Generator = () => {
     // User data
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
-      }
-      const { user, setUser, accessToken, setAccessToken } = useUser();
-      const db = firebase.firestore();
-      const [pathName,setPathName] = useState("");
-      const findDocumentsWithEmptyToken = async (localAccessToken) => {
-        try {
-          const querySnapshot = await db.collection("users")
-            .where("accessToken", "==", localAccessToken) // Change this to "== null" if you use null values
-            .get();
-      
-          querySnapshot.forEach((doc) => {
-            setUser(doc.data());
-          });
-          setIsAuthenticated(true)
-        } catch (error) {
-          console.error("Error finding documents:", error);
-        }
-      };
-      useEffect(() => {
-        const localAccessToken = localStorage.getItem("accessToken");
-        if (localAccessToken) {
-          if (!user) {
-            findDocumentsWithEmptyToken(localAccessToken);
-          }
-        }
-        setPathName(location.pathname);
-      }, [pathName, user])
+    }
+    const { user } = useUser();
 
     const fetchGenerateImages = async () => {
         const apiUrl = 'https://stablediffusionapi.com/api/v3/text2img';
@@ -131,19 +106,20 @@ const Generator = () => {
             const date = new Date(Date.now());
             const dateFormat = date.toLocaleString();
             if (response) {
-                axios.post("http://localhost:5000/generator", {
-                user_id: user.uid,
-                user_display_name: user.displayName,
-                image_id: response.id,
-                image_url: response.output,
-                prompt: response.meta.prompt,
-                height: response.meta.H,
-                width:  response.meta.W,
-                date: dateFormat
+                axios.post("http://localhost:3200/generator", {
+                    user_id: user.uid,
+                    user_display_name: user.displayName,
+                    image_id: response.id,
+                    image_url: response.output,
+                    prompt: response.meta.prompt,
+                    height: response.meta.H,
+                    width: response.meta.W,
+                    date: dateFormat
                 })
             }
         });
         window.scrollTo(0, 0);
+        setResults(null);
     }
 
     return (
