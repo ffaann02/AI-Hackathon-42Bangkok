@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react"
 import { useNavigate } from 'react-router-dom';
 import { saveAs } from "file-saver";
 import Card from "../components/Card"
-import data from "../components/DummyHistory.js"
+import data from "../components/DummyHistory"
+import html2canvas from "html2canvas"
+import axios from "axios"
 const History = () => {
 
     const [selectDisplay, setSelectDisplay] = useState("All generation")
@@ -45,11 +47,27 @@ const History = () => {
         setSelectDisplay("Favorites");
     }
 
-    const downloadClick = () => {
-        let url = imgURL[0]
-        console.log(imgURL);
-        saveAs(url, "image.jpg")
-    }
+
+    const handleDownload = async (imageUrl) => {
+        try {
+          const response = await axios.post('http://localhost:3200/fetch-image', { imageUrl }, { responseType: 'arraybuffer' });
+          const imageData = response.data;
+          console.log(response)
+    
+          const imageBlob = new Blob([imageData], { type: 'image/png' });
+          const imageURL = URL.createObjectURL(imageBlob);
+    
+          const link = document.createElement('a');
+          link.href = imageURL;
+          link.download = 'image.png';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } catch (error) {
+          console.error('Error fetching or processing image:', error);
+        }
+      };
+
 
     return (
         <div className="relative">
@@ -86,21 +104,23 @@ const History = () => {
                         {/*content*/}
                         <div className="relative grid grid-cols-12 border-0 rounded-lg shadow-lg w-full bg-white outline-none focus:outline-none" ref={cardDetailRef}>
                             {/*body*/}
-                            <div className="col-span-6 relative p-2 flex">
+                            <div className="col-span-6 relative p-2 flex" id="test">
                                 <img src={imgURL} className="ml-0" />
                             </div>
 
                             <div className="col-span-6 relative p-2">
 
                                 <div className="flex justify-end mt-4">
-                                    <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black py-2 px-4 rounded-sm inline-flex items-center" onClick={downloadClick}>
+                                    <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black py-2 px-4 rounded-sm inline-flex items-center"
+                                        onClick={() => { handleDownload(imgURL[0]) }}>
                                         <svg className="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" /></svg>
                                         <span>Download</span>
                                     </button>
                                     <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black  px-4 py-2 rounded-sm" onClick={() => navigate(`/share/${imgID}`)}>
                                         <span>Share</span>
                                     </button>
-                                    <button className="mr-4 bg-project-black hover:bg-gray-600 text-white  px-4 py-2 rounded-sm">
+                                    <button className="mr-4 bg-project-black hover:bg-gray-600 text-white  px-4 py-2 rounded-sm"
+                                    >
                                         <span>Save</span>
                                     </button>
                                 </div>

@@ -1,15 +1,40 @@
 import { Link, useLocation } from "react-router-dom"
-import React from "react"
+import React, { useRef, useState,useEffect } from "react"
 import { useUser } from "../UserContext";
 import googleIcon from '/images/google-icon.png';
 import robotCoverLogin from '/images/robot-png.png';
-import {AiFillCaretDown} from 'react-icons/ai';
+import { AiFillCaretDown } from 'react-icons/ai';
+import { FiLogOut } from "react-icons/fi";
 const Navbar = () => {
-    const { user } = useUser();
+    const { user,setUser } = useUser();
     const location = useLocation();
+    const [toggleProfileBar,setToggleProfileBar] = useState(false);
+    const profileBarRef = useRef();
+    useEffect(() => {
+        let handler = (e) => {
+            if (profileBarRef.current) { // To check that ref was not undefined
+                if (!profileBarRef.current.contains(e.target)) {
+                    setToggleProfileBar(false);
+                }
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => {
+            document.removeEventListener("mousedown", handler);
+        }
+    });
+
+
+    const handleSignOut=()=>{
+        setUser(null);
+        localStorage.removeItem("accessToken");
+        setToggleProfileBar(false)
+    }
+
+    
     return (
         <>
-            <nav className={`sticky top-0 w-full h-14 bg-project-navy-2 flex px-20 justify-between z-[999] border-b-[1px]
+            <nav className={`sticky top-0 w-full h-14 bg-project-navy-2 flex px-20 justify-between z-[100] border-b-[1px]
          border-slate-600 ${location.pathname !== "/login" ? "block" : "hidden"}`}>
                 <div className="flex">
                     <Link to="/">
@@ -29,10 +54,12 @@ const Navbar = () => {
                 {user ?
                     <div className="flex h-full">
                         <p className="my-auto text-white text-md tracking-wider flex">{user.displayName}
-                         <AiFillCaretDown className="mt-[6px] text-sm hover:text-slate-200 cursor-pointer"/>
+                            <AiFillCaretDown className="mt-[6px] text-sm hover:text-slate-200 cursor-pointer" 
+                            onClick={()=>{setToggleProfileBar(prev=>!prev)}}/>
                         </p>
                         <div className="my-auto bg-white rounded-full ml-2 border-2 border-project-orange hover:opacity-80">
-                            <img src={user.photoURL} className="cursor-pointer w-8 h-8 hover:opacity-70 rounded-full"/>
+                            <img src={user.photoURL} className="cursor-pointer w-8 h-8 hover:opacity-70 rounded-full" 
+                            onClick={()=>{setToggleProfileBar(prev=>!prev)}}/>
                         </div>
                     </div>
                     : <div className="flex h-full">
@@ -46,6 +73,21 @@ const Navbar = () => {
                         </Link>
                     </div>}
             </nav>
+            {toggleProfileBar && <div className='absolute top-[3.6rem] right-20 z-[200] px-24 py-14' ref={profileBarRef}>
+                <div className="w-5 h-5 bg-project-navy-1 absolute -top-1 right-[0.5rem] rotate-45 z-[150]">
+                </div>
+                <div className="bg-project-navy-1 absolute z-[160] w-full h-full right-0 top-0 rounded-md drop-shadow-md">
+                    <div className="h-full flex flex-col justify-between">
+                        <div>
+
+                        </div>
+                        <div className="flex text-white text-lg border-t-[1px] border-project-navy-2 px-4 py-2 
+                        hover:bg-slate-600 rounded-b-md cursor-pointer" onClick={handleSignOut}>
+                            <FiLogOut className="my-auto mr-2" /><a>Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>}
         </>
     )
 }

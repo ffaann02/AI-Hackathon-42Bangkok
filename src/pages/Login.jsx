@@ -72,7 +72,7 @@ const Login = () => {
             console.error('Google login error:', error);
         }
     };
-
+    
     return (
         <>
             <div className="w-full h-full absolute -z-10" id="bg-login">
