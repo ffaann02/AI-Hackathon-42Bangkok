@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import Generator from './pages/Generator';
 import { UserProvider } from "./UserContext";
-///Firebase
+/// Firebase
 import firebaseConfig from "./firebaseConfig";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
@@ -28,6 +28,7 @@ function App() {
   const db = firebase.firestore();
   const [pathName, setPathName] = useState("");
   const [isAuthenticated,setIsAuthenticated] = useState(false);
+  
   const findDocumentsWithEmptyToken = async (localAccessToken) => {
     try {
       const querySnapshot = await db.collection("users")
