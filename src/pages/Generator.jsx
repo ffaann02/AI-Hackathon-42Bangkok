@@ -3,10 +3,47 @@ import { useEffect, useState } from "react";
 import "../App.css"
 import waitingBotImage from "/images/waiting-bot.gif"
 import { useUser } from "../UserContext";
+
+// Firebase
+import firebaseConfig from "../firebaseConfig";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+
 const Generator = () => {
     const [results, setResults] = useState(null);
     const [promptsInput, setPromptsInput] = useState("Furniture, Wood, Like a King, Fancy, Useable and Possible to craft Furniture");
     const [progress, setProgress] = useState(false);
+
+    // User data
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      const { user, setUser, accessToken, setAccessToken } = useUser();
+      const db = firebase.firestore();
+      const [pathName,setPathName] = useState("");
+      const findDocumentsWithEmptyToken = async (localAccessToken) => {
+        try {
+          const querySnapshot = await db.collection("users")
+            .where("accessToken", "==", localAccessToken) // Change this to "== null" if you use null values
+            .get();
+      
+          querySnapshot.forEach((doc) => {
+            setUser(doc.data());
+          });
+          setIsAuthenticated(true)
+        } catch (error) {
+          console.error("Error finding documents:", error);
+        }
+      };
+      useEffect(() => {
+        const localAccessToken = localStorage.getItem("accessToken");
+        if (localAccessToken) {
+          if (!user) {
+            findDocumentsWithEmptyToken(localAccessToken);
+          }
+        }
+        setPathName(location.pathname);
+      }, [pathName, user])
 
     const fetchGenerateImages = async () => {
         const apiUrl = 'https://stablediffusionapi.com/api/v3/text2img';
@@ -81,6 +118,7 @@ const Generator = () => {
             }, 4000); // Simulating a 1-second delay for the API request
         });
     }
+
     const dummyGenerateFetch = () => {
         setProgress(true); // Reset progress before starting the request
 
@@ -88,6 +126,22 @@ const Generator = () => {
             console.log('API Response:', response);
             setResults(response);
             setProgress(false); // Set progress to 100% when request is complete
+
+            // Post to database
+            const date = new Date(Date.now());
+            const dateFormat = date.toLocaleString();
+            if (response) {
+                axios.post("http://localhost:5000/generator", {
+                user_id: user.uid,
+                user_display_name: user.displayName,
+                image_id: response.id,
+                image_url: response.output,
+                prompt: response.meta.prompt,
+                height: response.meta.H,
+                width:  response.meta.W,
+                date: dateFormat
+                })
+            }
         });
         window.scrollTo(0, 0);
     }

@@ -15,6 +15,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import Login from "./pages/Login";
 import History from './pages/History';
+import Share from "./pages/Share";
 import { useUser } from "./UserContext";
 import React, { useEffect } from "react"
 import Navbar from "./components/Navbar";
@@ -57,7 +58,8 @@ function App() {
             <Route path="/" element={<div>hello: {user && user.displayName}</div>} />
             <Route path="/generator" element={<Generator />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/History" element={<History />}/>
+            <Route path="/history" element={<History />}/>
+            <Route path="/share/:imageid" element={<Share />}/>
           </Routes>
         </Router>
       </div>
