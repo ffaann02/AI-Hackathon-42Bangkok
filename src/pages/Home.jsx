@@ -3,7 +3,7 @@ import service1Image from "/images/robot-cover-login.png";
 const Home = () => {
     const navigate = useNavigate();
     return (
-        <div className="w-full h-full bg-slate-50 min-h-screen grid place-items-center">
+        <div className="w-full h-full min-h-screen grid place-items-center">
             <div className="max-w-4xl w-full h-full pb-52 xl:pt-20 pt-16">
                 <h1 className="text-center text-2xl font-bold">LOGO NAME</h1>
                 <div className="w-full mt-10 grid grid-cols-2 h-full">

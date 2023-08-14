@@ -54,7 +54,7 @@ function App() {
   }, [pathName, user])
   return (
     <>
-        <div className="w-full min-h-screen relative">
+        <div className="w-full min-h-screen relative ">
           <div className="mx-auto w-full">
             <Router>
               <Navbar/>
