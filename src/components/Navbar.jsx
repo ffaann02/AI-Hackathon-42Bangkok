@@ -48,6 +48,7 @@ const Navbar = () => {
             document.removeEventListener("mousedown", handler);
         }
     });
+
     return (
         <>
             <nav className={`sticky top-0 w-full h-14 bg-project-navy-2 flex px-20 justify-between z-[100] border-b-[1px]
