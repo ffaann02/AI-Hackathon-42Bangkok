@@ -113,6 +113,7 @@ const Generator = () => {
                 prompt: response.meta.prompt,
                 height: response.meta.H,
                 width:  response.meta.W,
+                privacy: "Private"
                 })
             }
         });
