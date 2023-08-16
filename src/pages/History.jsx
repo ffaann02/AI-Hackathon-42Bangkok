@@ -143,7 +143,7 @@ const History = () => {
     }
 
     return (
-        <div className="relative w-full h-full min-h-screen xl:max-w-[75rem] 2xl:max-w-[90rem] lg:max-w-[65rem]  mx-auto">
+        <div className="relative w-full h-full xl:max-w-[75rem] 2xl:max-w-[90rem] lg:max-w-[65rem]  mx-auto">
             <div className="py-4 relative pt-20">
                 <h1 className="text-3xl font-semibold tracking-wider ml-4 text-slate-800 w-full">History</h1>
                 <div className="mt-5 w-full ml-2 flex justify-between">

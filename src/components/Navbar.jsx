@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from "react"
 import { useUser } from "../UserContext";
 import googleIcon from '/images/google-icon.png';
 import robotCoverLogin from '/images/robot-png.png';
-import { AiFillCaretDown,AiOutlineStar} from 'react-icons/ai';
+import { AiFillCaretDown, AiOutlineStar } from 'react-icons/ai';
 import { FiLogOut } from "react-icons/fi";
 const Navbar = () => {
     const { user, setUser } = useUser();
@@ -32,7 +32,7 @@ const Navbar = () => {
     }
 
     const [selectServicesToggle, setSelectServicesToggle] = useState(false);
-    const [serviceChoices,setServicesChoices] = useState(1);
+    const [serviceChoices, setServicesChoices] = useState(0);
     const selectServiceRef = useRef();
 
     useEffect(() => {
@@ -66,22 +66,26 @@ const Navbar = () => {
                                 <path stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
                             </svg>
                         </button>
-                        {selectServicesToggle && 
-                        <div id="dropdown" className="top-14 absolute z-10 bg-slate-50 divide-gray-100 border-[1px]
-                                rounded-sm shadow w-fit" onMouseLeave={()=>{setSelectServicesToggle(false)}}>
-                            <ul class="text-sm text-gray-700">
-                                <li>
-                                    <a href="#" className={`text-[16px] block py-3 hover:bg-slate-100 px-5 rounded-sm 
+                        {selectServicesToggle &&
+                            <div id="dropdown" className="top-14 absolute z-10 bg-slate-50 divide-gray-100 border-[1px]
+                                rounded-sm shadow w-fit" onMouseLeave={() => { setSelectServicesToggle(false) }}>
+                                <ul class="text-sm text-gray-700">
+                                    <li>
+                                        <Link to="/generator/prompt" onClick={() => { setSelectServicesToggle(false) }}>
+                                            <a className={`text-[16px] block py-3 hover:bg-slate-200 px-5 rounded-sm 
                                     ${serviceChoices === 1 && "bg-slate-100 pointer-events-none text-project-orange"}`}
-                                        >Promts to Furniture Images</a>
-                                </li>
-                                <li>
-                                    <a href="#" className={`text-[16px] block py-3 hover:bg-slate-100 px-5 rounded-sm 
+                                            >Prompts to Furniture Images</a>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/generator/items" onClick={() => { setSelectServicesToggle(false) }}>
+                                            <a className={`text-[16px] block py-3 hover:bg-slate-200 px-5 rounded-sm 
                                     ${serviceChoices === 2 && "bg-slate-100 pointer-events-none text-project-orange"}`}
-                                        >Products to Decoration</a>
-                                </li>
-                            </ul>
-                        </div>}
+                                            >Products to Decoration</a>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </div>}
                     </div>
                     <div className="flex">
                         <Link to="/history">
@@ -131,7 +135,7 @@ const Navbar = () => {
                     <div className="h-full flex flex-col justify-between">
                         <div className="flex">
                             <p className="text-white text-lg px-3 py-2 flex">
-                                <AiOutlineStar className="my-auto mr-2 text-xl text-yellow-400"/> Credits: {10}
+                                <AiOutlineStar className="my-auto mr-2 text-xl text-yellow-400" /> Credits: {10}
                             </p>
                         </div>
                         <div className="flex text-white text-lg border-t-[1px] border-project-navy-2 px-4 py-2 

@@ -7,7 +7,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import Generator from './pages/Generator';
+import GeneratorWithText from './pages/GeneratorWithText';
 import { UserProvider } from "./UserContext";
 /// Firebase
 import firebaseConfig from "./firebaseConfig";
@@ -20,6 +20,7 @@ import { useUser } from "./UserContext";
 import React, { useEffect } from "react"
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import GeneratorWithItems from "./pages/GeneratorWithItems";
 function App() {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
@@ -50,8 +51,7 @@ function App() {
         findDocumentsWithEmptyToken(localAccessToken);
       }
     }
-    setPathName(location.pathname);
-  }, [pathName, user])
+  }, [user])
   return (
     <>
         <div className="w-full min-h-screen relative ">
@@ -60,7 +60,8 @@ function App() {
               <Navbar/>
               <Routes>
                 <Route path="/" element={<Home/>}/>
-                <Route path="/generator" element={<Generator />} />
+                <Route path="/generator/prompt" element={<GeneratorWithText/>} />
+                <Route path="/generator/items" element={<GeneratorWithItems/>}/>
                 <Route path="/login" element={<Login />} />
                 <Route path="/history" element={<History />} />
                 <Route path="/share/:imageid" element={<Share />} />
