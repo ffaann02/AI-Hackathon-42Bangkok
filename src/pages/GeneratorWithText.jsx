@@ -123,7 +123,7 @@ const Generator = () => {
 
     return (
         <>
-            <div className={`flex w-full ${!progress && "min-h-screen"} h-full justify-center my-auto`}>
+            <div className={`flex w-full h-full justify-center my-auto`}>
                 <div className="w-full text-center max-w-5xl">
                     <div className="flex mx-auto justify-center w-full sticky top-16 mt-10 shadow-lg rounded-md ">
                         <input
