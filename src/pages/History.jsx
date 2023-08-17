@@ -14,6 +14,7 @@ const History = () => {
     const [sortListToggle, setSortListToggle] = useState(false)
     const [imgURL, setImgURL] = useState(null)
     const { user } = useUser();
+
     const cardDetailRef = useRef();
     const selectSortRef = useRef();
 
@@ -21,7 +22,9 @@ const History = () => {
     const [historyData, setHistoryData] = useState(null);
     const [sortMode, setSortMode] = useState(1);
 
-    const [isFavorite, setIsFavorite] = useState(null);
+    const [favoriteData, setFavoriteData] = useState(null);
+
+    const [isFavorite, setIsFavorite] = useState([]);
 
     useEffect(() => {
         if (user) {
@@ -34,6 +37,13 @@ const History = () => {
             try {
                 const response = await axios.get(`http://localhost:3200/history?history=${ownerID}`);
                 setHistoryData(response.data);
+
+                // Favorite
+                const rawData = response.data;
+                const filteredData = rawData.filter(item => item.favorite === "true");
+                setFavoriteData(filteredData);
+                console.log(filteredData);
+
                 console.log(response.data)
             } catch (error) {
                 console.error(error);
@@ -104,7 +114,9 @@ const History = () => {
 
     const reverseArray = () => {
         const reversedArray = [...historyData].reverse()
+        const reversedArrayFavorite = [...favoriteData].reverse()
         setHistoryData(reversedArray);
+        setFavoriteData(reversedArrayFavorite);
         if(sortMode===1){
             setSortMode(2);
         }
@@ -161,8 +173,7 @@ const History = () => {
 
             </div>
 
-            {selectDisplay === "All generated"
-                && historyData
+            {selectDisplay === "All generated" && historyData
                 && <div className="w-full grid grid-cols-12 pt-2">
                     {historyData.map(item => (
                         <Card
@@ -182,6 +193,29 @@ const History = () => {
                     imagePrompt = {imgPrompt}
                     favorite = {isFavorite}
                     cardDetailRef = {cardDetailRef}
+                />
+            }
+
+            {selectDisplay === "Favorites" && favoriteData
+                &&  <div className="w-full grid grid-cols-12 pt-2">
+                        {favoriteData.map(item => (
+                            <Card
+                            key={`${item.id}_${favoriteData[0].id}`}
+                            onClick={handleCardClick} // Pass the onClick function
+                            {...item}
+                            />
+                        ))}
+                    </div>
+            }
+
+            {selectDisplay === "Favorites" && cardClicked &&
+                <HistoryModal
+                onClick = {updateFavoriteState} // return new props to parent function
+                imageID = {imgID}
+                imageURL = {imgURL}
+                imagePrompt = {imgPrompt}
+                favorite = {isFavorite}
+                cardDetailRef = {cardDetailRef}
                 />
             }
 
