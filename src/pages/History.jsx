@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useRef } from "react"
-import { useNavigate } from 'react-router-dom';
-import { saveAs } from "file-saver";
-import Card from "../components/Card"
-import data from "../components/DummyHistory"
-import html2canvas from "html2canvas"
+import { useUser } from "../UserContext"
 import axios from "axios"
-import { useUser } from "../UserContext";
-import { GoChevronDown } from "react-icons/go"
+import Card from "../components/Card"
+import HistoryModal from "../components/HistoryModal";
 
 const History = () => {
 
@@ -21,35 +17,32 @@ const History = () => {
     const cardDetailRef = useRef();
     const selectSortRef = useRef();
 
-    const navigate = useNavigate();
-
-    const [userID, setUserID] = useState(null);
+    const [ownerID, setOwnerID] = useState(null);
     const [historyData, setHistoryData] = useState(null);
-    const [originalHistoryData, setOriginalHistoryData] = useState(null);
     const [sortMode, setSortMode] = useState(1);
+
+    const [isFavorite, setIsFavorite] = useState(null);
 
     useEffect(() => {
         if (user) {
-            setUserID(user.uid);
+            setOwnerID(user.uid);
         }
     }, [user])
 
     useEffect(() => {
         const fetchImageData = async () => {
             try {
-                console.log(userID);
-                const response = await axios.get(`http://localhost:3200/history?history=${userID}`);
+                const response = await axios.get(`http://localhost:3200/history?history=${ownerID}`);
                 setHistoryData(response.data);
-                setOriginalHistoryData(response.data);
                 console.log(response.data)
             } catch (error) {
                 console.error(error);
             }
         }
-        if (userID) {
+        if (ownerID) {
             fetchImageData();
         }
-    }, [userID])
+    }, [ownerID, isFavorite])
 
     useEffect(() => {
         let handler = (e) => {
@@ -79,12 +72,12 @@ const History = () => {
         }
     });
 
-    const handleCardClick = (id, prompt, imgURL) => {
-        console.log("TEst")
+    const handleCardClick = (id, prompt, imgURL, favorite) => {
         setCardClicked(true);
         setImgID(id);
         setImgPrompt(prompt);
         setImgURL(imgURL);
+        setIsFavorite(favorite);
     };
 
     const handleAllGeneratedClick = () => {
@@ -94,27 +87,6 @@ const History = () => {
     const handleFavoritesClick = () => {
         setSelectDisplay("Favorites");
     }
-
-
-    const handleDownload = async (imageUrl) => {
-        try {
-            const response = await axios.post('http://localhost:3200/fetch-image', { imageUrl }, { responseType: 'arraybuffer' });
-            const imageData = response.data;
-            console.log(response)
-
-            const imageBlob = new Blob([imageData], { type: 'image/png' });
-            const imageURL = URL.createObjectURL(imageBlob);
-
-            const link = document.createElement('a');
-            link.href = imageURL;
-            link.download = 'image.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error('Error fetching or processing image:', error);
-        }
-    };
 
     const areArraysEqual = (arr1, arr2) => {
         if (arr1.length !== arr2.length) {
@@ -140,6 +112,10 @@ const History = () => {
             setSortMode(1);
         }
         setSortListToggle(false);
+    }
+
+    const updateFavoriteState = async (favorite) => {
+        setIsFavorite(favorite)
     }
 
     return (
@@ -198,50 +174,16 @@ const History = () => {
                 </div>
             }
 
-            {selectDisplay === "All generated" && cardClicked && <>
-                <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-                    <div className="relative w-auto my-6 mx-auto max-w-5xl">
-                        {/*content*/}
-                        <div className="relative grid grid-cols-12 border-0 rounded-lg shadow-lg w-full bg-white outline-none focus:outline-none" ref={cardDetailRef}>
-                            {/*body*/}
-                            <div className="col-span-6 relative p-2 flex" id="test">
-                                <img src={imgURL} className="ml-0" />
-                            </div>
-
-                            <div className="col-span-6 relative p-2">
-
-                                <div className="flex justify-end mt-4">
-                                    <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black py-2 px-4 rounded-sm inline-flex items-center"
-                                        onClick={() => { handleDownload(imgURL) }}>
-                                        <svg className="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" /></svg>
-                                        <span>Download</span>
-                                    </button>
-                                    <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black  px-4 py-2 rounded-sm" onClick={() => navigate(`/share/${imgID}`)}>
-                                        <span>Share</span>
-                                    </button>
-                                    <button className="mr-4 bg-project-black hover:bg-gray-600 text-white  px-4 py-2 rounded-sm"
-                                    >
-                                        <span>Save</span>
-                                    </button>
-                                </div>
-
-                                <p className="mt-12 ml-8 text-2xl font-semibold">{imgPrompt}</p>
-
-                                <div className="absolute bottom-8 ml-8">
-                                    <button className="mr-4 bg-project-orange text-project-orange  px-24 py-4 rounded-lg">
-                                        <span>-</span>
-                                    </button>
-                                    <button className="mr-4 bg-project-black text-project-black  px-24 py-4 rounded-lg">
-                                        <span>-</span>
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-            </>}
+            {selectDisplay === "All generated" && cardClicked && 
+                <HistoryModal
+                    onClick = {updateFavoriteState} // return new props to parent function
+                    imageID = {imgID}
+                    imageURL = {imgURL}
+                    imagePrompt = {imgPrompt}
+                    favorite = {isFavorite}
+                    cardDetailRef = {cardDetailRef}
+                />
+            }
 
         </div>
     )
