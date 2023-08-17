@@ -106,14 +106,16 @@ const Generator = () => {
             console.log(response.output[0]);
             if (response) {
                 axios.post("http://localhost:3200/generator", {
-                user_id: user.uid,
-                user_display_name: user.displayName,
+                owner_id: user.uid,
+                owner_display_name: user.displayName,
+                owner_profile_image: user.photoURL,
                 image_id: response.id,
                 image_url: response.output[0],
                 prompt: response.meta.prompt,
                 height: response.meta.H,
                 width:  response.meta.W,
-                privacy: "Private"
+                privacy: "Private",
+                favorite: "false"
                 })
             }
         });
