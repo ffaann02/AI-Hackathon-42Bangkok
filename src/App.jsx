@@ -37,7 +37,13 @@ function App() {
         .get();
 
       querySnapshot.forEach((doc) => {
-        setUser(doc.data());
+        // setUser(doc.data());
+        if(doc.exists){
+          setUser(doc.data());
+        }
+        else{
+          setUser("Anonymous");
+        }
       });
       setIsAuthenticated(true)
     } catch (error) {
@@ -51,7 +57,12 @@ function App() {
         findDocumentsWithEmptyToken(localAccessToken);
       }
     }
-  }, [user])
+    else{
+      setUser("Anonymous");
+    }
+    setPathName(location.pathname);
+  }, [pathName, user])
+
   return (
     <>
         <div className="w-full min-h-screen relative ">

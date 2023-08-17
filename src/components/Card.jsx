@@ -1,10 +1,11 @@
 import React, { useState } from "react"
 
 const Card = (props) => {
+
     const handleClick = () => {
         // Call the onClick function passed from the parent component
         if (props.onClick) {
-            props.onClick(props.image_id, props.prompt, props.image_url); // Pass the id as an argument
+            props.onClick(props.image_id, props.prompt, props.image_url, props.favorite); // Pass the id as an argument
         }
     };
 
