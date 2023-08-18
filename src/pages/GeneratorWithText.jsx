@@ -41,9 +41,24 @@ const Generator = () => {
         try {
             setProgress(true); // Reset progress before starting the request
             const response = await axios.post(apiUrl, requestData);
-
+            console.log(response);
             console.log('API Response:', response.data);
-            setResults(response.data);
+            // Post to database
+            if (response) {
+                axios.post("http://localhost:3200/generator", {
+                    owner_id: user.uid,
+                    owner_display_name: user.displayName,
+                    owner_profile_image: user.photoURL,
+                    image_id: response.data.id,
+                    image_url: response.data.output[0],
+                    prompt: promptsInput,
+                    height: response.data.meta.H,
+                    width: response.data.meta.W,
+                    privacy: "Private",
+                    favorite: "false"
+                })
+                setResults(response.data);
+            }
             setProgress(false); // Set progress to 100% when request is complete
         } catch (error) {
             console.error('API Request Error:', error);
@@ -106,16 +121,16 @@ const Generator = () => {
             console.log(response.output[0]);
             if (response) {
                 axios.post("http://localhost:3200/generator", {
-                owner_id: user.uid,
-                owner_display_name: user.displayName,
-                owner_profile_image: user.photoURL,
-                image_id: response.id,
-                image_url: response.output[0],
-                prompt: response.meta.prompt,
-                height: response.meta.H,
-                width:  response.meta.W,
-                privacy: "Private",
-                favorite: "false"
+                    owner_id: user.uid,
+                    owner_display_name: user.displayName,
+                    owner_profile_image: user.photoURL,
+                    image_id: response.id,
+                    image_url: response.output[0],
+                    prompt: response.meta.prompt,
+                    height: response.meta.H,
+                    width: response.meta.W,
+                    privacy: "Private",
+                    favorite: "false"
                 })
             }
         });
@@ -140,7 +155,7 @@ const Generator = () => {
                             className='bg-slate-100 text-md px-3 py-2 rounded-md font-bold
                         hover:text-blue-600 text-slate-600
                         hover:bg-slate-200 rounded-l-none ease-in duration-200'
-                            onClick={() => { dummyGenerateFetch() }}>
+                            onClick={() => { fetchGenerateImages() }}>
                             Generate
                         </button>
                     </div>
@@ -155,7 +170,7 @@ const Generator = () => {
                     {results && (
                         <div className="w-full">
                             <p className="mt-10 mb-2 text-xl font-bold">Result:</p>
-                            <img src={results.output} alt="Generated Image"
+                            <img src={results.output[0]} alt="Generated Image"
                                 className="mx-auto" />
                         </div>
                     )}

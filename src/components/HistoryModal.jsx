@@ -2,6 +2,7 @@ import { IoIosHeart } from "react-icons/io"
 import axios from "axios"
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import { MdDelete } from 'react-icons/md'
 
 const HistoryModal = (props) => {
 
@@ -41,7 +42,7 @@ const HistoryModal = (props) => {
                 favorite: "false"
             })
             // When child got clicked, return value to parent 
-            props.onClick("false");
+            await props.onClick("false");
         }
         else{
             setIsFavorite("true")
@@ -51,7 +52,7 @@ const HistoryModal = (props) => {
                 favorite: "true"
             })
             // When child got clicked, return value to parent 
-            props.onClick("true");
+            await props.onClick("true");
         }
     }
 
@@ -69,6 +70,11 @@ const HistoryModal = (props) => {
                         <div className="col-span-6 relative p-2">
 
                             <div className="flex justify-end mt-4">
+                                <button className={`mr-3 flex bg-[#D9D9D9]
+                                 hover:bg-gray-400 text-black items-center px-3 py-2 rounded-sm`} onClick={() => handleClickFavorite()}>
+                                    <MdDelete className="mt-0.5 text-md" />
+                                    <p className="ml-1.5 my-auto text-md">Delete</p>
+                                </button>
                                 <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black py-2 px-4 rounded-sm inline-flex items-center"
                                 onClick={() => { handleDownload(props.imageURL) }}>
                                     <svg className="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" /></svg>

@@ -21,6 +21,8 @@ import React, { useEffect } from "react"
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import GeneratorWithItems from "./pages/GeneratorWithItems";
+import GeneratorWithDraw from "./pages/GeneratorWithDraw";
+
 function App() {
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
@@ -73,6 +75,7 @@ function App() {
                 <Route path="/" element={<Home/>}/>
                 <Route path="/generator/prompt" element={<GeneratorWithText/>} />
                 <Route path="/generator/items" element={<GeneratorWithItems/>}/>
+                <Route path="/generator/draw"  element={<GeneratorWithDraw/>}/>
                 <Route path="/login" element={<Login />} />
                 <Route path="/history" element={<History />} />
                 <Route path="/share/:imageid" element={<Share />} />

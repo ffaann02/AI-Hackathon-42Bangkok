@@ -25,13 +25,32 @@ const Share = () => {
     const [formattedDate, setFormattedDate] = useState(null);
 
     const [copySuccess, setCopySuccess] = useState("")
-    const url = location.href;
 
     const [privacyState, setPrivacyState] = useState(null);
     const [toggleBoolean, setToggleBoolean] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
 
     const [loadSuccess, setLoadSuccess] = useState(false);
+
+    const handleDownload = async (imageUrl) => {
+        try {
+            const response = await axios.post('http://localhost:3200/fetch-image', { imageUrl }, { responseType: 'arraybuffer' });
+            const imageData = response.data;
+            console.log(response)
+
+            const imageBlob = new Blob([imageData], { type: 'image/png' });
+            const imageURL = URL.createObjectURL(imageBlob);
+
+            const link = document.createElement('a');
+            link.href = imageURL;
+            link.download = `${props.imageID}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error fetching or processing image:', error);
+        }
+    };
 
     useEffect(() => {
         if (imageid && user !== null && !loadSuccess) {
@@ -64,7 +83,6 @@ const Share = () => {
                 setLoadSuccess(true);
             }
             else {
-                console.log("IDIFJSIODJFIOSDJFIOJSDO");
                 const fetchShare = async () => {
                     try {
                         let visitorID = "No User";
