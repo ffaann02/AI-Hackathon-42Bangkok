@@ -17,8 +17,8 @@ const Home = () => {
 
     return (
         <div className="w-full h-full grid place-items-center">
-            <div className="max-w-4xl w-full h-full pb-52 xl:pt-20 pt-16">
-                <button className="bg-red-200" onClick={handleGenAI}>TEST</button>
+            <div className="max-w-4xl w-full h-full pt-10">
+                <button onClick={handleGenAI}>hello</button>
                 <h1 className="text-center text-2xl font-bold">LOGO NAME</h1>
                 <div className="w-full mt-10 grid grid-cols-2 h-full">
                     <div className="bg-slate-100 mx-4 rounded-lg text-center drop-shadow-md hover:bg-slate-200

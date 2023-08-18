@@ -17,7 +17,19 @@ const GeneratorWithDraw = () => {
     }
 
     const clearButton = () => {
-        canvasRef.current.clear();
+        if(canvasRef.current === null && imageDataUrl !== null){
+            setImageDataUrl(null);
+        }
+        else if (canvasRef.current !== null && imageDataUrl === null){
+            canvasRef.current.clear();
+        }
+        else if (canvasRef.current !== null && imageDataUrl !== null){
+            canvasRef.current.clear();
+            setImageDataUrl(null);
+        }
+        else{
+            return;
+        }
     }
 
     const onDrawing = (event) => {
@@ -31,10 +43,18 @@ const GeneratorWithDraw = () => {
     const [progress, setProgress] = useState(null);
     const [results, setResults] = useState(null);
 
+    const [imageDataUrl, setImageDataUrl] = useState(null);
+
     const handleGenerateWithDrawing = async () => {
         setProgress(true);
         setUndrawable(true)
-        const dataURL = await canvasRef.current.canvasContainer.children[1].toDataURL('image/png');
+        let dataURL;
+        if(imageDataUrl){
+            dataURL = imageDataUrl;
+        }
+        else{
+            dataURL = await canvasRef.current.canvasContainer.children[1].toDataURL('image/png');
+        }
         const response = await axios.post("http://localhost:3200/replicate-api", {
             prompt: promptsInput,
             token: import.meta.env.VITE_CONTROLNET_API_TOKEN,
@@ -51,11 +71,38 @@ const GeneratorWithDraw = () => {
         }
     }
     const handleGenerateAnother = () => {
-        canvasRef.current.clear();
         setResults(null);
         setProgress(null);
         setUndrawable(false);
+        if(canvasRef.current === null && imageDataUrl !== null){
+            setImageDataUrl(null);
+        }
+        else if (canvasRef.current !== null && imageDataUrl === null){
+            canvasRef.current.clear();
+        }
+        else if (canvasRef.current !== null && imageDataUrl !== null){
+            canvasRef.current.clear();
+            setImageDataUrl(null);
+        }
+        else{
+            return;
+        }
     }
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+    
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            setImageDataUrl(event.target.result);
+            if(canvasRef.current !== null){
+                canvasRef.current.clear();
+            }
+          };
+          reader.readAsDataURL(file);
+        }
+      };
 
     return (
         <div className="w-full h-full mx-auto">
@@ -92,14 +139,21 @@ const GeneratorWithDraw = () => {
                 </div>}
             <div className="mx-auto max-w-3xl mt-3">
                 <div className="flex w-full justify-center">
-                    <CanvasDraw
+                    {imageDataUrl === null 
+                        ? 
+                        <CanvasDraw
                         ref={canvasRef}
                         onChange={(e) => { onDrawing(e) }}
                         brushColor="#000000"
                         brushRadius={2}
                         className="border-2 mx-2"
                         disabled={undrawable}
-                    />
+                        /> 
+                        :
+                        <div className="w-[400px] h-[400px] border-2 relative flex">
+                            <img src={imageDataUrl} className="my-auto"/>
+                        </div>
+                    }
                     {progress!==null && <div className="w-[400px] h-[400px] border-2 relative">
                         {results !== null && progress===false && 
                         <img src={results}
@@ -113,6 +167,15 @@ const GeneratorWithDraw = () => {
                     </div>}
                 </div>
             </div>
+            {!undrawable && 
+            <div className="mx-auto max-w-3xl mt-4">
+                <div className="relative justify-center mx-auto w-full text-center">
+                    <p className="absolute ml-[345px] mt-0.5">Or upload your file.</p>
+                    <input type="file" accept="image/*" onChange={handleImageChange}  
+                    className="my-auto"/>
+                </div>
+            </div>
+            }
         </div>
     );
 }

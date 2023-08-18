@@ -8,6 +8,7 @@ export default {
     extend: {
       colors:{
         'project-orange':"#E49D65",
+        'project-orange-1':"#EEAF7D",
         'project-black': '#111111',
         'project-navy' : {
           1:'#585b6e',
