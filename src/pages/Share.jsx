@@ -32,26 +32,6 @@ const Share = () => {
 
     const [loadSuccess, setLoadSuccess] = useState(false);
 
-    const handleDownload = async (imageUrl) => {
-        try {
-            const response = await axios.post('http://localhost:3200/fetch-image', { imageUrl }, { responseType: 'arraybuffer' });
-            const imageData = response.data;
-            console.log(response)
-
-            const imageBlob = new Blob([imageData], { type: 'image/png' });
-            const imageURL = URL.createObjectURL(imageBlob);
-
-            const link = document.createElement('a');
-            link.href = imageURL;
-            link.download = `${props.imageID}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error('Error fetching or processing image:', error);
-        }
-    };
-
     useEffect(() => {
         if (imageid && user !== null && !loadSuccess) {
             if (user !== "Anonymous") {
@@ -180,7 +160,7 @@ const Share = () => {
                     <div className='col-span-4'>
                         <p className='ml-4 text-sm mb-1 text-project-navy-1'>Creator</p>
                         <div className='flex ml-4'>
-                            <img src={userImageProfile} className='rounded-full h-14'></img>
+                            <img src={owenerProfileImage} className='rounded-full h-14'></img>
                             <p className='my-auto ml-4 font-semibold text-project-navy-2'>{userDisplayName}</p>
                         </div>
                         <div className='flex mt-6'>
@@ -241,7 +221,7 @@ const Share = () => {
                     <div className='col-span-4'>
                         <p className='ml-4 text-sm mb-1 text-project-navy-1'>Creator</p>
                         <div className='flex ml-4'>
-                            <img src={userImageProfile} className='rounded-full h-14'></img>
+                            <img src={owenerProfileImage} className='rounded-full h-14'></img>
                             <p className='my-auto ml-4 font-semibold text-project-navy-2'>{userDisplayName}</p>
                         </div>
                         <div className='flex mt-6'>

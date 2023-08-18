@@ -134,10 +134,17 @@ const HistoryModal = (props) => {
 
                             <p className="mt-12 ml-8 text-2xl font-semibold">{props.imagePrompt}</p>
 
+                            <div className="flex-col items-end justify-end">
+                                <div className="inline-flex mt-8">
+                                    <p className="ml-8 my-auto text-md text-project-navy-1">Service :</p>
+                                    <p className="ml-4 my-auto text-md">{props.service}</p>
+                                </div>
+                            </div>
+
                             <div className="flex-col items-end flex-grow justify-end">
-                                <div className="inline-flex">
-                                    <p className="mt-12 ml-8 my-auto text-md text-project-navy-1">Generated in :</p>
-                                    <p className="mt-12 ml-4 my-auto text-md">{formattedDate}</p>
+                                <div className="inline-flex mt-4">
+                                    <p className="ml-8 my-auto text-md text-project-navy-1">Generated date :</p>
+                                    <p className="ml-4 my-auto text-md">{formattedDate}</p>
                                 </div>
                             </div>
 

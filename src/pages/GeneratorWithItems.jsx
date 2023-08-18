@@ -1,13 +1,24 @@
-import React, { useState ,useEffect,useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { CiSearch } from "react-icons/ci";
 import { BsFillCartFill } from "react-icons/bs";
 import { FaRobot } from "react-icons/fa";
 import furnitureData from "../components/products_data.json";
-
+import { useUser } from "../UserContext";
+import axios from "axios";
+import botWaiting from "/images/waiting-bot.gif"
 const GeneratorWithItems = () => {
   const [searchTitle, setSearchTitle] = useState("");
   const [cartItems, setCartItems] = useState([]);
   const [showCartModal, setShowCartModal] = useState(false);
+
+  const [prompts, setPrompts] = useState("");
+  const [openResultModal, setOpenResultModal] = useState(false);
+  const [progress, setProgress] = useState(null);
+  const [result, setResult] = useState(null);
+  const modalRef = useRef();
+  const modalResultRef = useRef();
+  const { user } = useUser();
+
 
   const handleAddToCart = (item) => {
     const updatedCart = cartItems.map((cartItem) =>
@@ -30,12 +41,61 @@ const GeneratorWithItems = () => {
     setShowCartModal(!showCartModal);
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     console.log(cartItems)
+    setOpenResultModal(true)
+    setProgress(true);
     if (cartItems) {
       const combinedPrompt = cartItems.map((item) => `${item.amount} ${item.promt}`).join(', ');
-      console.log(combinedPrompt)
+      console.log(combinedPrompt);
       setPrompts(combinedPrompt);
+
+      const furniture_positive_prompt_template = "A photo of a room decoration, Realistic, Possible to craft, "
+      const finished_prompt = furniture_positive_prompt_template + combinedPrompt
+      console.log(finished_prompt);
+
+      const apiUrl = 'https://stablediffusionapi.com/api/v3/text2img';
+      const requestData = {
+        "key": import.meta.env.VITE_STABLE_DIFFUSION_API_KEY,
+        "prompt": finished_prompt,
+        "negative_prompt": "((out of frame)), ((extra fingers)), mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), (((tiling))), ((naked)), ((tile)), ((fleshpile)), ((ugly)), (((abstract))), blurry, ((bad anatomy)), ((bad proportions)), ((extra limbs)), cloned face, (((skinny))), glitchy, ((extra breasts)), ((double torso)), ((extra arms)), ((extra hands)), ((mangled fingers)), ((missing breasts)), (missing lips), ((ugly face)), ((fat)), ((extra legs))",
+        "width": "512",
+        "height": "512",
+        "samples": "1",
+        "num_inference_steps": "20",
+        "safety_checker": "no",
+        "enhance_prompt": "yes",
+        "seed": null,
+        "guidance_scale": 7.5,
+        "webhook": null,
+        "track_id": null
+      };
+      try {
+        const response = await axios.post(apiUrl, requestData);
+        console.log(response);
+        console.log('API Response:', response.data);
+        setResult(response.data)
+        setProgress(false);
+        // Post to database
+        if (response) {
+          axios.post("http://localhost:3200/generator", {
+            owner_id: user.uid,
+            owner_display_name: user.displayName,
+            owner_profile_image: user.photoURL,
+            image_id: response.data.id,
+            image_url: response.data.output[0],
+            prompt: combinedPrompt,
+            height: response.data.meta.H,
+            width: response.data.meta.W,
+            privacy: "Private",
+            favorite: "false"
+          })
+        }
+      }
+      catch (error) {
+        console.error('API Request Error:', error);
+      }
+
     }
   }
 
@@ -44,21 +104,33 @@ const GeneratorWithItems = () => {
   );
 
   const cartTotal = cartItems.reduce((total, item) => total + item.amount, 0);
-  const [prompts,setPrompts] = useState("");
-  const modalRef = useRef();
   useEffect(() => {
     let handler = (e) => {
-        if (modalRef.current) { // To check that ref was not undefined
-            if (!modalRef.current.contains(e.target)) {
-                setShowCartModal(false);
-            }
+      if (modalRef.current) { // To check that ref was not undefined
+        if (!modalRef.current.contains(e.target)) {
+          setShowCartModal(false);
         }
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => {
-        document.removeEventListener("mousedown", handler);
+      document.removeEventListener("mousedown", handler);
     }
-});
+  });
+
+  useEffect(() => {
+    let handler = (e) => {
+      if (modalResultRef.current) { // To check that ref was not undefined
+        if (!modalResultRef.current.contains(e.target)) {
+          setOpenResultModal(false);
+        }
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    }
+  });
   return (
     <div className="w-full max-w-5xl h-full mx-auto">
       <div className="w-full mt-10">
@@ -135,22 +207,22 @@ const GeneratorWithItems = () => {
 
                 </div>
                 <div className="mt-8">
-                <p className="font-bold text-2xl text-center ml-4">{item.amount}</p>
-                <div className="flex items-center ml-4 mt-4">
-                  <button
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded-md mr-2"
-                    onClick={() => handleAddToCart(item)}
-                  >
-                    +
-                  </button>
-                  <button
-                    className="bg-red-500 hover:bg-red-600 text-white px-2 py-0.5 rounded-md"
-                    onClick={() => handleRemoveFromCart(item.id)}
-                  >
-                    -
-                  </button>
-                </div>
+                  <p className="font-bold text-2xl text-center ml-4">{item.amount}</p>
+                  <div className="flex items-center ml-4 mt-4">
+                    <button
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded-md mr-2"
+                      onClick={() => handleAddToCart(item)}
+                    >
+                      +
+                    </button>
+                    <button
+                      className="bg-red-500 hover:bg-red-600 text-white px-2 py-0.5 rounded-md"
+                      onClick={() => handleRemoveFromCart(item.id)}
+                    >
+                      -
+                    </button>
                   </div>
+                </div>
               </div>
             ))}
             <button
@@ -159,6 +231,36 @@ const GeneratorWithItems = () => {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+      {openResultModal === true && progress !== null && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white p-4 rounded-md w-full max-w-3xl min-h-20 h-full overflow-y-auto py-20">
+            {result === null && progress === false && <img src={botWaiting} />}
+            {result === null && progress === false && <div className="w-full absolute right-0 text-center mt-4">
+              <p className="font-bold text-xl tracking-wider text-slate-600">
+                Generating Room Decoration with items<span id="dot-animation"></span>
+              </p>
+            </div>}
+            {result &&
+              <div>
+                <p className="text-xl text-center mb-4 font-bold">Result:</p>
+                <img className="mx-auto"
+                  src={result.output[0]} />
+                <button
+                  className="bg-blue-500 hover:bg-blue-600 text-white 
+              px-4 py-2 rounded-md mt-4 justify-center
+              mx-auto flex"
+                  onClick={() => {
+                    setOpenResultModal(false);
+                    setResult(null);
+                    setProgress(null)
+                  }}
+                >
+                  Generate Another Image
+                </button>
+              </div>}
           </div>
         </div>
       )}
