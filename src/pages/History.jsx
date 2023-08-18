@@ -3,6 +3,8 @@ import { useUser } from "../UserContext"
 import axios from "axios"
 import Card from "../components/Card"
 import HistoryModal from "../components/HistoryModal";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content'
 
 const History = () => {
 
@@ -20,11 +22,12 @@ const History = () => {
 
     const [ownerID, setOwnerID] = useState(null);
     const [historyData, setHistoryData] = useState(null);
-    const [sortMode, setSortMode] = useState(1);
+    const [sortMode, setSortMode] = useState(2);
 
     const [favoriteData, setFavoriteData] = useState(null);
 
-    const [isFavorite, setIsFavorite] = useState([]);
+    const [isFavoriteUpdate, setIsFavoriteUpdate] = useState([]);
+    const [tempIsFavorite, setTempIsFavorite] = useState(null);
 
     useEffect(() => {
         if (user) {
@@ -42,9 +45,7 @@ const History = () => {
                 const rawData = response.data;
                 const filteredData = rawData.filter(item => item.favorite === "true");
                 setFavoriteData(filteredData);
-                console.log(filteredData);
 
-                console.log(response.data)
             } catch (error) {
                 console.error(error);
             }
@@ -52,7 +53,7 @@ const History = () => {
         if (ownerID) {
             fetchImageData();
         }
-    }, [ownerID, isFavorite])
+    }, [ownerID, isFavoriteUpdate])
 
     useEffect(() => {
         let handler = (e) => {
@@ -87,7 +88,7 @@ const History = () => {
         setImgID(id);
         setImgPrompt(prompt);
         setImgURL(imgURL);
-        setIsFavorite(favorite);
+        setTempIsFavorite(favorite);
     };
 
     const handleAllGeneratedClick = () => {
@@ -126,8 +127,42 @@ const History = () => {
         setSortListToggle(false);
     }
 
-    const updateFavoriteState = async (favorite) => {
-        setIsFavorite(favorite)
+    const updateFavoriteState = (favorite) => {
+        setIsFavoriteUpdate(Date.now()); // Use timestamp for fetch new data (useEffect)
+        setTempIsFavorite(favorite);
+    }
+
+    const sweetAlert = withReactContent(Swal)
+    const showAlert = (title, html, icon) => {
+        sweetAlert.fire({
+            title: <strong>{title}</strong>,
+            html: <i>{html}</i>,
+            icon: icon,
+            confirmButtonText: 'Yes',
+            confirmButtonColor: '#1ea1d9',
+            showCancelButton: true,
+            cancelButtonText: 'No',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setToggleBoolean(setBoolean);
+                setPrivacyState(showPrivacy);
+                // Update to SQL
+                axios.post("http://localhost:3200/update-privacy", {
+                    image_id: imageid,
+                    privacy: showPrivacy
+                })
+            } else {
+                setToggleBoolean(!setBoolean);
+                console.log("Denied");
+            }
+        })
+    }
+
+    const deleteFromDatabase = async (imageID) => {
+        await axios.post("http://localhost:3200/history-delete-selected", {
+                image_id: imageID,
+        })
     }
 
     return (
@@ -191,7 +226,7 @@ const History = () => {
                     imageID = {imgID}
                     imageURL = {imgURL}
                     imagePrompt = {imgPrompt}
-                    favorite = {isFavorite}
+                    favorite = {tempIsFavorite}
                     cardDetailRef = {cardDetailRef}
                 />
             }
@@ -214,7 +249,7 @@ const History = () => {
                 imageID = {imgID}
                 imageURL = {imgURL}
                 imagePrompt = {imgPrompt}
-                favorite = {isFavorite}
+                favorite = {tempIsFavorite}
                 cardDetailRef = {cardDetailRef}
                 />
             }
