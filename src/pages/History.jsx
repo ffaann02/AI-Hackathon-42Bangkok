@@ -16,6 +16,7 @@ const History = () => {
     const [sortListToggle, setSortListToggle] = useState(false)
     const [imgURL, setImgURL] = useState(null)
     const [createDate, setCreatedDate] = useState(null);
+    const [serviceType, setServiceType] = useState(null);
 
     const cardDetailRef = useRef();
     const selectSortRef = useRef();
@@ -86,13 +87,14 @@ const History = () => {
         }
     });
 
-    const handleCardClick = (id, prompt, imgURL, favorite, date) => {
+    const handleCardClick = (id, prompt, imgURL, favorite, date, service) => {
         setCardClicked(true);
         setImgID(id);
         setImgPrompt(prompt);
         setImgURL(imgURL);
         setTempIsFavorite(favorite);
         setCreatedDate(date);
+        setServiceType(service);
     };
 
     const handleAllGeneratedClick = () => {
@@ -201,6 +203,7 @@ const History = () => {
                     favorite = {tempIsFavorite}
                     cardDetailRef = {cardDetailRef}
                     date = {createDate}
+                    service = {serviceType}
                 />
             }
 
@@ -225,6 +228,7 @@ const History = () => {
                 favorite = {tempIsFavorite}
                 cardDetailRef = {cardDetailRef}
                 date = {createDate}
+                service = {serviceType}
                 />
             }
 

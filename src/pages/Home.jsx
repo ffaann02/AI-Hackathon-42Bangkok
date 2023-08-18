@@ -5,20 +5,9 @@ import axios from "axios";
 const Home = () => {
     const navigate = useNavigate();
 
-    const handleGenAI = async () => {
-
-        // Success
-        // axios.post("http://localhost:3200/replicate-api", {
-        //             prompt: "a 19th century portrait of a raccoon gentleman wearing a suit",
-        //             token: import.meta.env.VITE_CONTROLNET_API_TOKEN
-        // })
-
-    }
-
     return (
         <div className="w-full h-full grid place-items-center">
             <div className="max-w-4xl w-full h-full pt-10">
-                <button onClick={handleGenAI}>hello</button>
                 <h1 className="text-center text-2xl font-bold">LOGO NAME</h1>
                 <div className="w-full mt-10 grid grid-cols-2 h-full">
                     <div className="bg-slate-100 mx-4 rounded-lg text-center drop-shadow-md hover:bg-slate-200
