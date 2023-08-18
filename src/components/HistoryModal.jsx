@@ -3,14 +3,22 @@ import axios from "axios"
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { MdDelete } from 'react-icons/md'
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content'
+import { format } from 'date-fns';
 
 const HistoryModal = (props) => {
 
-    const [isFavorite, setIsFavorite] = useState(null);
     const navigate = useNavigate();
+
+    const [isFavorite, setIsFavorite] = useState(null);
+    const [formattedDate, setFormattedDate] = useState(null);
 
     useEffect(() => {
         setIsFavorite(props.favorite)
+        const date = new Date(props.date);
+        const date_formatted = format(date, 'd MMMM yyyy');
+        setFormattedDate(date_formatted);
     }, [props])
 
     const handleDownload = async (imageUrl) => {
@@ -42,7 +50,7 @@ const HistoryModal = (props) => {
                 favorite: "false"
             })
             // When child got clicked, return value to parent 
-            await props.onClick("false");
+            await props.onClick("false", false);
         }
         else{
             setIsFavorite("true")
@@ -52,8 +60,42 @@ const HistoryModal = (props) => {
                 favorite: "true"
             })
             // When child got clicked, return value to parent 
-            await props.onClick("true");
+            await props.onClick("true", false);
         }
+    }
+
+    const sweetAlert = withReactContent(Swal)
+    const showAlert = (title, html, icon) => {
+        sweetAlert.fire({
+            title: <strong>{title}</strong>,
+            html: <i>{html}</i>,
+            icon: icon,
+            confirmButtonText: 'Yes',
+            confirmButtonColor: '#1ea1d9',
+            showCancelButton: true,
+            cancelButtonText: 'No',
+            cancelButtonColor: '#d33'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Update to SQL
+                axios.post("http://localhost:3200/history-delete-selected", {
+                    image_id: props.imageID,
+                }).then(response => {
+                    props.onClick(isFavorite, true);
+                    console.log("Passed props onclick");
+                    })
+            } else {
+                console.log("Denied");
+            }
+        })
+    }
+
+    const handleClickDelete = async () => {
+        showAlert(
+            "Are you sure that you want delete this generated image ?",
+            "If you deleted, you can't restore it.",
+            "question"
+        )
     }
 
     return (
@@ -71,7 +113,7 @@ const HistoryModal = (props) => {
 
                             <div className="flex justify-end mt-4">
                                 <button className={`mr-3 flex bg-[#D9D9D9]
-                                 hover:bg-gray-400 text-black items-center px-3 py-2 rounded-sm`} onClick={() => handleClickFavorite()}>
+                                 hover:bg-gray-400 text-black items-center px-3 py-2 rounded-sm`} onClick={() => handleClickDelete()}>
                                     <MdDelete className="mt-0.5 text-md" />
                                     <p className="ml-1.5 my-auto text-md">Delete</p>
                                 </button>
@@ -80,25 +122,23 @@ const HistoryModal = (props) => {
                                     <svg className="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" /></svg>
                                     <span>Download</span>
                                 </button>
-                                <button className="mr-3 bg-[#D9D9D9] hover:bg-gray-400 text-black  px-4 py-2 rounded-sm" onClick={() => navigate(`/share/${props.imageID}`)}>
+                                <button className="mr-3 bg-project-orange hover:bg-gray-400 text-white  px-4 py-2 rounded-sm" onClick={() => navigate(`/share/${props.imageID}`)}>
                                     <span>Share</span>
                                 </button>
-                                <button className={`mr-4 flex ${isFavorite === "true" ? "bg-red-500" : "bg-project-black"}
+                                <button className={`mr-4 flex ${isFavorite === "true" ? "bg-red-500" : "bg-project-navy-2"}
                                  hover:bg-gray-600 text-white items-center px-3 py-2 rounded-sm`} onClick={() => handleClickFavorite()}>
-                                    <IoIosHeart className="mt-0.5 text-md" />
+                                    <IoIosHeart className="mt-0.5 text-md text-white"/>
                                     <p className="ml-1.5 my-auto text-md">Favorite</p>
                                 </button>
                             </div>
 
                             <p className="mt-12 ml-8 text-2xl font-semibold">{props.imagePrompt}</p>
 
-                            <div className="absolute bottom-8 ml-8">
-                                <button className="mr-4 bg-project-orange text-project-orange  px-24 py-4 rounded-lg">
-                                    <span>-</span>
-                                </button>
-                                <button className="mr-4 bg-project-black text-project-black  px-24 py-4 rounded-lg">
-                                    <span>-</span>
-                                </button>
+                            <div className="flex-col items-end flex-grow justify-end">
+                                <div className="inline-flex">
+                                    <p className="mt-12 ml-8 my-auto text-md text-project-navy-1">Generated in :</p>
+                                    <p className="mt-12 ml-4 my-auto text-md">{formattedDate}</p>
+                                </div>
                             </div>
 
                         </div>
