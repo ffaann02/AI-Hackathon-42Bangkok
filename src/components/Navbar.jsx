@@ -70,20 +70,28 @@ const Navbar = () => {
                             <div id="dropdown" className="top-14 absolute z-10 bg-slate-50 divide-gray-100 border-[1px]
                                 rounded-sm shadow w-fit" onMouseLeave={() => { setSelectServicesToggle(false) }}>
                                 <ul class="text-sm text-gray-700">
+                                <li>
+                                        <Link to="/generator/draw" onClick={() => { setSelectServicesToggle(false) }}>
+                                            <a className={`text-[16px] block py-3 hover:bg-slate-200 px-5 rounded-sm 
+                                    ${serviceChoices === 1 && "bg-slate-100 pointer-events-none text-project-orange"}`}
+                                            >Create personalize Furniture</a>
+                                        </Link>
+                                    </li>
                                     <li>
                                         <Link to="/generator/prompt" onClick={() => { setSelectServicesToggle(false) }}>
                                             <a className={`text-[16px] block py-3 hover:bg-slate-200 px-5 rounded-sm 
-                                    ${serviceChoices === 1 && "bg-slate-100 pointer-events-none text-project-orange"}`}
+                                    ${serviceChoices === 2 && "bg-slate-100 pointer-events-none text-project-orange"}`}
                                             >Prompts to Furniture Images</a>
                                         </Link>
                                     </li>
                                     <li>
                                         <Link to="/generator/items" onClick={() => { setSelectServicesToggle(false) }}>
                                             <a className={`text-[16px] block py-3 hover:bg-slate-200 px-5 rounded-sm 
-                                    ${serviceChoices === 2 && "bg-slate-100 pointer-events-none text-project-orange"}`}
+                                    ${serviceChoices === 3 && "bg-slate-100 pointer-events-none text-project-orange"}`}
                                             >Products to Decoration</a>
                                         </Link>
                                     </li>
+                                    
                                 </ul>
                             </div>}
                     </div>
