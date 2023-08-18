@@ -3,10 +3,10 @@ import { useUser } from "../UserContext"
 import axios from "axios"
 import Card from "../components/Card"
 import HistoryModal from "../components/HistoryModal";
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content'
 
 const History = () => {
+
+    const { user } = useUser();
 
     const [selectDisplay, setSelectDisplay] = useState("All generated")
 
@@ -15,7 +15,7 @@ const History = () => {
     const [imgPrompt, setImgPrompt] = useState(null)
     const [sortListToggle, setSortListToggle] = useState(false)
     const [imgURL, setImgURL] = useState(null)
-    const { user } = useUser();
+    const [createDate, setCreatedDate] = useState(null);
 
     const cardDetailRef = useRef();
     const selectSortRef = useRef();
@@ -28,6 +28,7 @@ const History = () => {
 
     const [isFavoriteUpdate, setIsFavoriteUpdate] = useState([]);
     const [tempIsFavorite, setTempIsFavorite] = useState(null);
+    const [isDeletedImageUpdate, setIsDeletedImageUpdate] = useState(null);
 
     useEffect(() => {
         if (user) {
@@ -45,6 +46,8 @@ const History = () => {
                 const rawData = response.data;
                 const filteredData = rawData.filter(item => item.favorite === "true");
                 setFavoriteData(filteredData);
+                // Reset state
+                setIsDeletedImageUpdate(false);
 
             } catch (error) {
                 console.error(error);
@@ -53,7 +56,7 @@ const History = () => {
         if (ownerID) {
             fetchImageData();
         }
-    }, [ownerID, isFavoriteUpdate])
+    }, [ownerID, isFavoriteUpdate, isDeletedImageUpdate])
 
     useEffect(() => {
         let handler = (e) => {
@@ -83,12 +86,13 @@ const History = () => {
         }
     });
 
-    const handleCardClick = (id, prompt, imgURL, favorite) => {
+    const handleCardClick = (id, prompt, imgURL, favorite, date) => {
         setCardClicked(true);
         setImgID(id);
         setImgPrompt(prompt);
         setImgURL(imgURL);
         setTempIsFavorite(favorite);
+        setCreatedDate(date);
     };
 
     const handleAllGeneratedClick = () => {
@@ -127,42 +131,10 @@ const History = () => {
         setSortListToggle(false);
     }
 
-    const updateFavoriteState = (favorite) => {
+    const updateFavoriteState = (favorite, deleted) => {
         setIsFavoriteUpdate(Date.now()); // Use timestamp for fetch new data (useEffect)
         setTempIsFavorite(favorite);
-    }
-
-    const sweetAlert = withReactContent(Swal)
-    const showAlert = (title, html, icon) => {
-        sweetAlert.fire({
-            title: <strong>{title}</strong>,
-            html: <i>{html}</i>,
-            icon: icon,
-            confirmButtonText: 'Yes',
-            confirmButtonColor: '#1ea1d9',
-            showCancelButton: true,
-            cancelButtonText: 'No',
-            cancelButtonColor: '#d33'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                setToggleBoolean(setBoolean);
-                setPrivacyState(showPrivacy);
-                // Update to SQL
-                axios.post("http://localhost:3200/update-privacy", {
-                    image_id: imageid,
-                    privacy: showPrivacy
-                })
-            } else {
-                setToggleBoolean(!setBoolean);
-                console.log("Denied");
-            }
-        })
-    }
-
-    const deleteFromDatabase = async (imageID) => {
-        await axios.post("http://localhost:3200/history-delete-selected", {
-                image_id: imageID,
-        })
+        setIsDeletedImageUpdate(deleted);
     }
 
     return (
@@ -228,6 +200,7 @@ const History = () => {
                     imagePrompt = {imgPrompt}
                     favorite = {tempIsFavorite}
                     cardDetailRef = {cardDetailRef}
+                    date = {createDate}
                 />
             }
 
@@ -251,6 +224,7 @@ const History = () => {
                 imagePrompt = {imgPrompt}
                 favorite = {tempIsFavorite}
                 cardDetailRef = {cardDetailRef}
+                date = {createDate}
                 />
             }
 
