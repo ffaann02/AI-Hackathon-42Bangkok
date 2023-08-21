@@ -5,6 +5,7 @@ import googleIcon from '/images/google-icon.png';
 import robotCoverLogin from '/images/robot-png.png';
 import { AiFillCaretDown, AiOutlineStar } from 'react-icons/ai';
 import { FiLogOut } from "react-icons/fi";
+import logoImage from "/images/FurnicheLogo.png"
 const Navbar = () => {
     const { user, setUser } = useUser();
     const location = useLocation();
@@ -55,7 +56,10 @@ const Navbar = () => {
          border-slate-600 ${location.pathname !== "/login" ? "block" : "hidden"}`}>
                 <div className="flex">
                     <Link to="/">
-                        <h1 className="my-auto mt-[14px] text-white text-xl font-bold mr-6 cursor-pointer">LOGO NAME</h1>
+                        <div className="flex">
+                            <img src={logoImage} className="w-8 h-8 mt-2.5 mr-3"/>
+                        <h1 className="my-auto mt-[14px] text-white text-xl font-bold mr-6 cursor-pointer tracking-wider">FURNICHE</h1>
+                        </div>
                     </Link>
                     <div className="w-fit my-auto" ref={selectServiceRef}>
                         <button onClick={() => { setSelectServicesToggle(prev => !prev) }}
@@ -103,7 +107,7 @@ const Navbar = () => {
 
                     </div>
                 </div>
-                {user ?
+                {user && user!=="Anonymous" ?
                     <div className="flex h-full">
                         <p className="my-auto text-white text-md tracking-wider flex cursor-pointer">{user.displayName}
                             <AiFillCaretDown

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import service1Image from "/images/robot-cover-login.png";
 import axios from "axios";
+import banner from "/images/banner.webp"
 
 const Home = () => {
     const navigate = useNavigate();
@@ -8,29 +9,19 @@ const Home = () => {
     return (
         <div className="w-full h-full grid place-items-center">
             <div className="max-w-4xl w-full h-full pt-10">
-                <h1 className="text-center text-2xl font-bold">LOGO NAME</h1>
-                <div className="w-full mt-10 grid grid-cols-2 h-full">
-                    <div className="bg-slate-100 mx-4 rounded-lg text-center drop-shadow-md hover:bg-slate-200
-                    cursor-pointer" onClick={() => { navigate("/generator") }}>
-                        <h2 className="mt-8 text-xl font-bold tracking-wider">
-                            Build a Furniture with prompts
-                        </h2>
-                        <img src={service1Image} className="px-10 py-2" />
-                        <p className="">
-                            Create persolized furnitures with prompt
-                        </p>
+                {/* <h1 className="text-center text-2xl font-bold">LOGO NAME</h1> */}
+                <div className="w-full mt-16 grid grid-cols-6 h-full">
+                    <div className="col-span-3">
+                        <h1 className="text-5xl font-bold tracking-wide mt-10">Let's build your dream furniture with our AI-Driven Platform.</h1>
+                        <p className="text-lg my-2">We have an excellent aritificial inteligence to create furniture images from your need</p>
+                        <button className="text-black mt-3 bg-project-orange-1 hover:bg-project-orange px-4 py-2 text-xl rounded-xl font-bold"
+                        onClick={()=>{navigate("/generator/draw")}}>
+                            Check it out
+                        </button>
                     </div>
-                    <div className="bg-slate-100 mx-4 rounded-lg text-center drop-shadow-md hover:bg-slate-200
-                    cursor-pointer" onClick={() => { navigate("/generator") }}>
-                        <h2 className="mt-8 text-xl font-bold tracking-wider">
-                            Build a Furniture with prompts
-                        </h2>
-                        <img src={service1Image} className="px-10 py-2" />
-                        <p className="">
-                            Create persolized furnitures with prompt
-                        </p>
+                    <div className="col-span-3">
+                        <img src={banner} className="w-full h-full ml-20"/>
                     </div>
-
                 </div>
             </div>
         </div>

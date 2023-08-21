@@ -12,12 +12,6 @@ import botIcon from '/images/bot-icon.png';
 const Login = () => {
     const navigate = useNavigate();
     const { user, setUser, accessToken, setAccessToken } = useUser();
-    useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
-        if (accessToken || user) {
-            navigate("/")
-        }
-    }, [])
 
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
