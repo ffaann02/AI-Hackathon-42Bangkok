@@ -7,7 +7,7 @@ import { useUser } from "../UserContext"
 
 const GeneratorWithDraw = () => {
     const canvasRef = useRef(null);
-    const [promptsInput, setPromptsInput] = useState("Furniture, Wood, Like a King, Fancy, Useable and Possible to craft Furniture");
+    const [promptsInput, setPromptsInput] = useState("");
 
     const { user } = useUser();
 
